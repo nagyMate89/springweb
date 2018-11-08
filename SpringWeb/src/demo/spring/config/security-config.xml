@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="select username, concat('{noop}', password) as password, enabled from users where username = ?;"
+				authorities-by-username-query="select * from authorities where username = ?;"
+				role-prefix="ROLE_" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<security:http use-expressions="true">
+	<security:intercept-url access="hasRole('ADMIN')" pattern="/admin" />
+	<security:intercept-url access="hasRole('ADMIN')" pattern="/offers" />
+	<security:intercept-url access="isAuthenticated()" pattern="/login" />
+	<security:intercept-url access="isAuthenticated()" pattern="/createoffer" />
+	<security:intercept-url access="isAuthenticated()" pattern="/docreate" />
+	<security:intercept-url access="isAuthenticated()" pattern="/offercreated" />
+	<security:intercept-url access="permitAll" pattern="/newaccount" />	
+	<security:intercept-url access="permitAll" pattern="/accountcreated" />	
+	<security:intercept-url access="permitAll" pattern="/createaccount" />	
+	<security:intercept-url access="permitAll" pattern="/staticresources/**" />
+	<security:intercept-url access="permitAll" pattern="/" />
+	<security:intercept-url access="permitAll" pattern="/loggedout" />
+		
+		<security:intercept-url access="denyAll" pattern="/**" />
+		<security:form-login />
+		<security:logout logout-success-url="/loggedout" />
+	</security:http>
+
+</beans>
